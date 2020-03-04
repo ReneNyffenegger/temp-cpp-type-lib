@@ -12,28 +12,28 @@ class TypeLib {
   public:
     TypeLib();
 
-    bool Open(std::string const& type_lib_file);
+    bool Open(std::wstring const& type_lib_file);
 
-    std::string LibDocumentation();
+    std::wstring LibDocumentation();
 
     int NofTypeInfos();
 
     bool CurTypeInfo(int);
 
-    std::string TypeDocumentation();
+    std::wstring TypeDocumentation();
 
-    // within current type info
+ // within current type info
     int   NofFunctions();
-    // within current function
+ // within current function
     short NofParameters();
     short NofOptionalParameters();
 
-    // within current type info
+ // within current type info
     int NofVariables();
 
-    std::string FunctionName();
-    std::string VariableName();
-    std::string ParameterName();
+    std::wstring FunctionName();
+    std::wstring VariableName();
+    std::wstring ParameterName();
 
     enum INVOKEKIND {
       func   = DISPATCH_METHOD,
@@ -44,7 +44,7 @@ class TypeLib {
 
     INVOKEKIND InvokeKind();
 
-    // See <oaidl.h>
+ // See <oaidl.h>
     enum VARIABLEKIND {
       instance  = VAR_PERINSTANCE,
       static_   = VAR_STATIC,
@@ -53,7 +53,7 @@ class TypeLib {
     };
     VARIABLEKIND VariableKind();
 
-    // See <oaidl.h>
+ // See <oaidl.h>
     enum TYPEFLAG {
       FDEFAULT       = IMPLTYPEFLAG_FDEFAULT,
       FSOURCE        = IMPLTYPEFLAG_FSOURCE,
@@ -61,10 +61,10 @@ class TypeLib {
       FDEFAULTVTABLE = IMPLTYPEFLAG_FDEFAULTVTABLE,
     };
 
-    // TODO? How to be used correctly
+ // TODO? How to be used correctly
     bool HasFunctionTypeFlag(TYPEFLAG);
 
-    // see here
+ // see here
     bool IsTypeEnum     ();
     bool IsTypeRecord   ();
     bool IsTypeModule   ();
@@ -75,13 +75,13 @@ class TypeLib {
     bool IsTypeUnion    ();
     bool IsTypeMax      ();
 
-    std::string ReturnType();
-    std::string ParameterType();
+    std::wstring ReturnType();
+    std::wstring ParameterType();
 
-    std::string VariableType();
+    std::wstring VariableType();
 
-    // Only makes sense if VariableKind == VARIABLEKIND.const_
-    std::string ConstValue();
+ // Only makes sense if VariableKind == VARIABLEKIND.const_
+    std::wstring ConstValue();
 
     bool NextTypeInfo();
 
@@ -128,10 +128,10 @@ class TypeLib {
 
     bool          IsTypeKind(int);
 
-    std::string   TypeDocumentation_(ITypeInfo*);
+    std::wstring  TypeDocumentation_(ITypeInfo*);
 
-    std::string   UserdefinedType(HREFTYPE);
-    std::string   Type(ELEMDESC const&);
+    std::wstring  UserdefinedType(HREFTYPE);
+    std::wstring  Type(ELEMDESC const&);
 };
 
 #endif

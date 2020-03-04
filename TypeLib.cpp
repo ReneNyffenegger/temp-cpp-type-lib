@@ -16,9 +16,10 @@ TypeLib::TypeLib() :
   ::OleInitialize(0);
 }
 
-bool TypeLib::Open(std::string const& type_lib_file) {
-  std::wstring ws_type_lib_file = s2ws(type_lib_file);
-  HRESULT hr = ::LoadTypeLib(ws_type_lib_file.c_str(), &typeLib_);
+bool TypeLib::Open(std::wstring const& type_lib_file) {
+//std::wstring ws_type_lib_file = s2ws(type_lib_file);
+//HRESULT hr = ::LoadTypeLibW(ws_type_lib_file.c_str(), &typeLib_);
+  HRESULT hr = ::LoadTypeLib(type_lib_file.c_str(), &typeLib_); // There is no LoadTypeLibW variant.
 
   if (hr != S_OK) {
     std::cout << "Error with LoadTypeLibrary" << std::endl;
@@ -87,43 +88,46 @@ bool TypeLib::IsTypeKind(int i) {
   return i == tk;
 }
 
-std::string TypeLib::LibDocumentation() {
-  if (! typeLib_) return "No Type Library open!";
-
-  BSTR name;
-  BSTR doc;
-  unsigned long ctx;
-  
-  HRESULT hr = typeLib_->GetDocumentation(
-    -1,
-    &name,
-    &doc,
-    &ctx,
-    0  // Help File
-    );
-
-  if (hr != S_OK) {
-    std::cout << "GetDocumentation failed" << std::endl;
-    return "";
-  }
-  
-  std::string sName = ws2s(name);
-  std::string sDoc;
-  if (doc) {
-    sDoc = ws2s(doc);
-  }
-  
-  ::SysFreeString(name);
-  ::SysFreeString(doc );
-  
-  return sName + ": " + sDoc;
+std::wstring TypeLib::LibDocumentation() {
+    if (! typeLib_) return L"No Type Library open!";
+ 
+    BSTR name;
+    BSTR doc;
+    unsigned long ctx;
+    
+    HRESULT hr = typeLib_->GetDocumentation(
+      -1,
+      &name,
+      &doc,
+      &ctx,
+      0  // Help File
+      );
+ 
+    if (hr != S_OK) {
+      std::wcout << L"GetDocumentation failed" << std::endl;
+      return L"";
+    }
+    
+    std::wstring sName = name;
+    std::wstring sDoc;
+    if (doc) sDoc = doc;
+ // std::string sName = ws2s(name);
+ // std::string sDoc;
+ // if (doc) {
+ //   sDoc = ws2s(doc);
+ // }
+    
+    ::SysFreeString(name);
+    ::SysFreeString(doc );
+    
+    return sName + L": " + sDoc;
 }
 
-std::string TypeLib::TypeDocumentation() {
+std::wstring TypeLib::TypeDocumentation() {
   return TypeDocumentation_(curITypeInfo_);
 }
 
-std::string TypeLib::TypeDocumentation_(ITypeInfo* i) {
+std::wstring TypeLib::TypeDocumentation_(ITypeInfo* i) {
   BSTR name;
   unsigned long ctx;
   
@@ -136,11 +140,12 @@ std::string TypeLib::TypeDocumentation_(ITypeInfo* i) {
     );
 
   if (hr != S_OK) {
-    std::cout << "GetDocumentation failed" << std::endl;
-    return "";
+    std::wcout << L"GetDocumentation failed" << std::endl;
+    return L"";
   }
   
-  std::string sName = ws2s(name);
+//std::string sName = ws2s(name);
+  std::wstring sName = name;
   
   ::SysFreeString(name);
   return sName;
@@ -170,7 +175,7 @@ bool TypeLib::NextFunction() {
   GetFuncNames();
 
   if (hr != S_OK) {
-    std::cout << "GetFuncDesc failed" << std::endl;
+    std::wcout << L"GetFuncDesc failed" << std::endl;
     return false;
   }
 
@@ -184,9 +189,9 @@ bool TypeLib::HasFunctionTypeFlag(TYPEFLAG tf) {
   return curImplTypeFlags_ & static_cast<int>(tf);
 }
 
-std::string TypeLib::ConstValue() {
+std::wstring TypeLib::ConstValue() {
   if (VariableKind() != const_) {
-    return "VariableKind must be const_";
+    return L"VariableKind must be const_";
   }
   //VARIANT v=*(curVarDesc_->lpvarValue);
   variant v=*(curVarDesc_->lpvarValue);
@@ -194,38 +199,38 @@ std::string TypeLib::ConstValue() {
   return v.ValueAsString();
 }
 
-std::string TypeLib::UserdefinedType(HREFTYPE hrt) {
-  std::string tp="";
+std::wstring TypeLib::UserdefinedType(HREFTYPE hrt) {
+  std::wstring tp=L"";
 
   ITypeInfo* itpi;
   curITypeInfo_ -> GetRefTypeInfo(hrt, &itpi);
-  std::string ref_type = TypeDocumentation_(itpi);
+  std::wstring ref_type = TypeDocumentation_(itpi);
   tp += ref_type;
 
   return tp;
 }
 
-std::string TypeLib::Type(ELEMDESC const& ed) {
+std::wstring TypeLib::Type(ELEMDESC const& ed) {
   TYPEDESC td = ed.tdesc;
 
-  std::string tp = TypeAsString(td.vt);
+  std::wstring tp = TypeAsString(td.vt);
 
   if (td.vt==VT_PTR) {
     TYPEDESC ptr_td = *(td.lptdesc);
-    tp += " (";
+    tp += L" (";
     tp += TypeAsString(ptr_td.vt);
     if (ptr_td.vt == VT_USERDEFINED) {
-      tp += " (";
+      tp += L" (";
       HREFTYPE hrt = ptr_td.hreftype;
       tp += UserdefinedType(hrt);
-      tp += ")";
+      tp += L")";
     }
-    tp += ")";
+    tp += L")";
   }
   else if (td.vt == VT_USERDEFINED) {
-    tp += " (";
+    tp += L" (";
     tp += UserdefinedType(td.hreftype);
-    tp += ")";
+    tp += L")";
   }
   else if (td.vt == VT_SAFEARRAY) {
     // TODO
@@ -234,19 +239,19 @@ std::string TypeLib::Type(ELEMDESC const& ed) {
   return tp;
 }
 
-std::string TypeLib::ParameterType() {
+std::wstring TypeLib::ParameterType() {
   ELEMDESC ed = curFuncDesc_->lprgelemdescParam[curFuncParam_];
 
   return Type(ed);
 }
 
-std::string TypeLib::VariableType() {
+std::wstring TypeLib::VariableType() {
   ELEMDESC ed = curVarDesc_->elemdescVar;
 
   return Type(ed);
 }
 
-std::string TypeLib::ReturnType() {
+std::wstring TypeLib::ReturnType() {
   ELEMDESC ed = curFuncDesc_->elemdescFunc;
 
   return Type(ed);
@@ -264,7 +269,7 @@ bool TypeLib::NextVariable() {
   HRESULT hr = curITypeInfo_->GetVarDesc(curVar_, &curVarDesc_);
 
   if (hr != S_OK) {
-    std::cout << "GetVarDesc failed" << std::endl;
+    std::cout << L"GetVarDesc failed" << std::endl;
     return false;
   }
 
@@ -278,7 +283,7 @@ bool TypeLib::NextParameter() {
   return true;
 }
 
-std::string TypeLib::VariableName() {
+std::wstring TypeLib::VariableName() {
   BSTR varName;
 
   unsigned int dummy;
@@ -286,24 +291,27 @@ std::string TypeLib::VariableName() {
   HRESULT hr = curITypeInfo_->GetNames(curVarDesc_->memid, &varName, 1, &dummy);
 
   if (hr!= S_OK) {
-    return "GetNames failed";
+    return L"GetNames failed";
   }
 
-  std::string ret = ws2s(varName);
+  std::wstring ret = varName;
+//std::string ret = ws2s(varName);
 
   ::SysFreeString(varName);
 
   return ret;
 }
 
-std::string TypeLib::ParameterName() {
-  if (1+curFuncParam_ >= static_cast<int>(nofFuncNames_)) return "<nameless>";
+std::wstring TypeLib::ParameterName() {
+  if (1+curFuncParam_ >= static_cast<int>(nofFuncNames_)) return L"<nameless>";
 
-  BSTR paramName = funcNames_[1+curFuncParam_];
+//BSTR paramName = funcNames_[1+curFuncParam_];
 
-  std::string ret = ws2s(paramName);
+//std::wstring ret = paramName;
+//std::string ret = ws2s(paramName);
 
-  return ret;
+//return ret;
+  return funcNames_[1+curFuncParam_];
 }
 
 // http://doc.ddart.net/msdn/header/include/oaidl.h.html
@@ -354,16 +362,17 @@ void TypeLib::GetFuncNames() {
   HRESULT hr = curITypeInfo_->GetNames(curFuncDesc_->memid, funcNames_, nof_names, &nofFuncNames_);
 
   if (hr!= S_OK) {
-    std::cout << "GetNames failed" << std::endl;
+    std::cout << L"GetNames failed" << std::endl;
   }
 }
 
-std::string TypeLib::FunctionName() {
-  BSTR funcName = funcNames_[0];
+std::wstring TypeLib::FunctionName() {
+//BSTR funcName = funcNames_[0];
 
-  std::string ret = ws2s(funcName);
+//std::string ret = ws2s(funcName);
 
-  return ret;
+  return funcNames_[0];
+//return ret;
 }
 
 int TypeLib::NofVariables() {

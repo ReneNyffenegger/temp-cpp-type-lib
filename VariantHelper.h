@@ -4,15 +4,15 @@
 
 #include <string>
 
-std::string VariantTypeAsString(const VARIANT& v);
-std::string        TypeAsString(VARTYPE);
+std::wstring VariantTypeAsString(const VARIANT& v);
+std::wstring        TypeAsString(VARTYPE);
 
 class variant {
   public:
     variant(VARIANT);
    ~variant();
 
-    std::string ValueAsString();
+    std::wstring ValueAsString();
 
     void ChangeType(VARTYPE);
 

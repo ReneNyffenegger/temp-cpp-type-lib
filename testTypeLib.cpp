@@ -1,16 +1,18 @@
-// g++ testTypeLib.cpp TypeLib.cpp win32_Unicode.cpp VariantHelper.cpp -lole32 -loleaut32
+// g++ testTypeLib.cpp TypeLib.cpp win32_Unicode.cpp VariantHelper.cpp -lole32 -loleaut32 -municode
+// 
+// a.exe "C:\Program Files\Common Files\microsoft shared\OFFICE14\MSO.DLL"
 
 #include <windows.h>
 #include <iostream>
 
 #include "TypeLib.h"
 
-int main(int argc, char *argv[]) {
+int wmain(int argc, wchar_t *argv[]) {
 
   TypeLib t;
 
   if (argc < 2) {
-      std::cout << "Specify typelib" << std::endl;
+      std::wcout << L"Specify typelib" << std::endl;
       return 1;
   }
 
@@ -20,101 +22,101 @@ int main(int argc, char *argv[]) {
      // "C:\\Program Files\\Common Files\\microsoft shared\\OFFICE14\\MSO.DLL"
      argv[1]
   )) {
-    std::cout << "Couldn't open type library" << std::endl;
+    std::wcout << L"Couldn't open type library" << std::endl;
     return -1;
   }
 
-  std::cout << t.LibDocumentation() << std::endl;
+  std::wcout << t.LibDocumentation() << std::endl;
 
   int nofTypeInfos = t.NofTypeInfos();
 
 
-  std::cout << "Nof Type Infos: " << nofTypeInfos << std::endl;
+  std::wcout << L"Nof Type Infos: " << nofTypeInfos << std::endl;
   
   while (t.NextTypeInfo()) {
-    std::string type_doc = t.TypeDocumentation(); 
+    std::wstring type_doc = t.TypeDocumentation(); 
 
-    std::cout <<                                   std::endl;
-    std::cout << type_doc                       << std::endl;
-    std::cout << "----------------------------" << std::endl;
+    std::wcout <<                                    std::endl;
+    std::wcout <<   type_doc                      << std::endl;
+    std::wcout << L"----------------------------" << std::endl;
 
-    std::cout << "  Interface: ";
-    if (t.IsTypeEnum     ())   std::cout << "Enum"; 
-    if (t.IsTypeRecord   ())   std::cout << "Record"; 
-    if (t.IsTypeModule   ())   std::cout << "Module"; 
-    if (t.IsTypeInterface())   std::cout << "Interface"; 
-    if (t.IsTypeDispatch ())   std::cout << "Dispatch"; 
-    if (t.IsTypeCoClass  ())   std::cout << "CoClass"; 
-    if (t.IsTypeAlias    ())   std::cout << "Alias"; 
-    if (t.IsTypeUnion    ())   std::cout << "Union"; 
-    if (t.IsTypeMax      ())   std::cout << "Max"; 
-    std::cout << std::endl;
+    std::wcout << "  Interface: ";
+    if (t.IsTypeEnum     ())   std::wcout << L"Enum"; 
+    if (t.IsTypeRecord   ())   std::wcout << L"Record"; 
+    if (t.IsTypeModule   ())   std::wcout << L"Module"; 
+    if (t.IsTypeInterface())   std::wcout << L"Interface"; 
+    if (t.IsTypeDispatch ())   std::wcout << L"Dispatch"; 
+    if (t.IsTypeCoClass  ())   std::wcout << L"CoClass"; 
+    if (t.IsTypeAlias    ())   std::wcout << L"Alias"; 
+    if (t.IsTypeUnion    ())   std::wcout << L"Union"; 
+    if (t.IsTypeMax      ())   std::wcout << L"Max"; 
+    std::wcout << std::endl;
 
     int nofFunctions=t.NofFunctions();
     int nofVariables=t.NofVariables();
 
-    std::cout << "  functions: " << nofFunctions << std::endl;
-    std::cout << "  variables: " << nofVariables << std::endl;
+    std::wcout << L"  functions: " << nofFunctions << std::endl;
+    std::wcout << L"  variables: " << nofVariables << std::endl;
 
     while (t.NextFunction()) {
-      std::cout << std::endl;
-      std::cout << "  Function     : " << t.FunctionName()          << std::endl;
+      std::wcout << std::endl;
+      std::wcout << "  Function     : " << t.FunctionName()          << std::endl;
 
-      std::cout << "    returns    : " << t.ReturnType() << std::endl;
+      std::wcout << "    returns    : " << t.ReturnType() << std::endl;
 
-      std::cout << "    flags      : ";
-      if (t.HasFunctionTypeFlag(TypeLib::FDEFAULT      )) std::cout << "FDEFAULT "      ;
-      if (t.HasFunctionTypeFlag(TypeLib::FSOURCE       )) std::cout << "FSOURCE "       ;
-      if (t.HasFunctionTypeFlag(TypeLib::FRESTRICTED   )) std::cout << "FRESTRICTED "   ;
-      if (t.HasFunctionTypeFlag(TypeLib::FDEFAULTVTABLE)) std::cout << "FDEFAULTVTABLE ";
-      std::cout << std::endl;
+      std::wcout << "    flags      : ";
+      if (t.HasFunctionTypeFlag(TypeLib::FDEFAULT      )) std::wcout << L"FDEFAULT "      ;
+      if (t.HasFunctionTypeFlag(TypeLib::FSOURCE       )) std::wcout << L"FSOURCE "       ;
+      if (t.HasFunctionTypeFlag(TypeLib::FRESTRICTED   )) std::wcout << L"FRESTRICTED "   ;
+      if (t.HasFunctionTypeFlag(TypeLib::FDEFAULTVTABLE)) std::wcout << L"FDEFAULTVTABLE ";
+      std::wcout << std::endl;
 
       TypeLib::INVOKEKIND ik = t.InvokeKind();
       switch (ik) {
         case TypeLib::func: 
-          std::cout <<"    invoke kind: function" << std::endl;
+          std::wcout <<L"    invoke kind: function" << std::endl;
           break;
         case TypeLib::put: 
-          std::cout <<"    invoke kind: put" << std::endl;
+          std::wcout <<L"    invoke kind: put" << std::endl;
           break;
         case TypeLib::get: 
-          std::cout <<"    invoke kind: get" << std::endl;
+          std::wcout <<L"    invoke kind: get" << std::endl;
           break;
         case TypeLib::putref: 
-          std::cout <<"    invoke kind: put ref" << std::endl;
+          std::wcout <<L"    invoke kind: put ref" << std::endl;
           break;
         default:
-          std::cout <<"    invoke kind: ???" << std::endl;
+          std::wcout <<L"    invoke kind: ???" << std::endl;
       }
 
-      std::cout << "    params     : " << t.NofParameters()         << std::endl;
-      std::cout << "    params opt : " << t.NofOptionalParameters() << std::endl;
+      std::wcout << L"    params     : " << t.NofParameters()         << std::endl;
+      std::wcout << L"    params opt : " << t.NofOptionalParameters() << std::endl;
 
       while (t.NextParameter()) {
-        std::cout << "    Parameter  : " << t.ParameterName();
-        std::cout << " type = " << t.ParameterType();
-        if (t.ParameterIsIn         ()) std::cout << " in";
-        if (t.ParameterIsOut        ()) std::cout << " out";
-        if (t.ParameterIsFLCID      ()) std::cout << " flcid";
-        if (t.ParameterIsReturnValue()) std::cout << " ret";
-        if (t.ParameterIsOptional   ()) std::cout << " opt";
-        if (t.ParameterHasDefault   ()) std::cout << " def";
-        if (t.ParameterHasCustumData()) std::cout << " cust";
-        std::cout << std::endl;
+        std::wcout << L"    Parameter  : " << t.ParameterName();
+        std::wcout << L" type = " << t.ParameterType();
+        if (t.ParameterIsIn         ()) std::wcout << L" in";
+        if (t.ParameterIsOut        ()) std::wcout << L" out";
+        if (t.ParameterIsFLCID      ()) std::wcout << L" flcid";
+        if (t.ParameterIsReturnValue()) std::wcout << L" ret";
+        if (t.ParameterIsOptional   ()) std::wcout << L" opt";
+        if (t.ParameterHasDefault   ()) std::wcout << L" def";
+        if (t.ParameterHasCustumData()) std::wcout << L" cust";
+        std::wcout << std::endl;
       }
     }
     while (t.NextVariable()) {
-      std::cout << "  Variable : " << t.VariableName() << std::endl;
-      std::cout << "      Type : " << t.VariableType();
+      std::wcout << L"  Variable : " << t.VariableName() << std::endl;
+      std::wcout << L"      Type : " << t.VariableType();
       TypeLib::VARIABLEKIND vk = t.VariableKind();
       switch (vk) {
-        case TypeLib::instance: std::cout << " (instance)" << std::endl; break;
-        case TypeLib::static_ : std::cout << " (static)"   << std::endl; break;
-        case TypeLib::const_  : std::cout << " (const ";
-             std::cout << t.ConstValue() << ")" << std::endl;            break;
-        case TypeLib::dispatch: std::cout << " (dispatch)" << std::endl; break;
+        case TypeLib::instance: std::wcout << L" (instance)" << std::endl; break;
+        case TypeLib::static_ : std::wcout << L" (static)"   << std::endl; break;
+        case TypeLib::const_  : std::wcout << L" (const ";
+             std::wcout << t.ConstValue() << L")" << std::endl;            break;
+        case TypeLib::dispatch: std::wcout << L" (dispatch)" << std::endl; break;
         default:
-          std::cout << "    variable kind: unknown" << std::endl;
+          std::wcout << L"    variable kind: unknown" << std::endl;
       }
     }
   }
