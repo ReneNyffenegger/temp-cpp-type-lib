@@ -1,4 +1,4 @@
-// g++ testTypeLib.cpp TypeLib.cpp win32_Unicode.cpp VariantHelper.cpp -lole32 -loleaut32 -municode
+// g++ testTypeLib.cpp TypeLib.cpp VariantHelper.cpp -lole32 -loleaut32 -municode
 // 
 // a.exe "C:\Program Files\Common Files\microsoft shared\OFFICE14\MSO.DLL"
 
