@@ -1,5 +1,5 @@
 #include "VariantHelper.h"
-#include "win32_Unicode.h"
+// #include "win32_Unicode.h"
 #include <iostream>
 
 std::wstring TypeAsString(VARTYPE vt){
@@ -212,15 +212,15 @@ variant::~variant() {
 }
 
 std::wstring variant::ValueAsString() {
-//std::wcout << L"ValueAsString" << std::endl;
   if (v_.vt != VT_BSTR) {
-//std::wcout << L"*this" << std::endl;
-    variant v = *this;
-//std::wcout << L"->ChangeType" << std::endl;
-
-    v.ChangeType(VT_BSTR);
-    return v.ValueAsString();
+     ChangeType(VT_BSTR);
   }
+//std::wcout << L"ret" << std::endl;
+//std::wstring ret;
+//std::wcout << L"going to assign" << std::endl;
+//ret = v_.bstrVal;
+//std::wcout << L"going to return v_.bstrVal" << std::endl;
+//return ret;
 //std::wcout << L"return v_.bstrVal" << std::endl;
 //std::wstring ret = v_.bstrVal;
 //std::wcout << L"ret = " << std::endl;
@@ -232,5 +232,10 @@ std::wstring variant::ValueAsString() {
 }
 
 void variant::ChangeType(VARTYPE vt) {
-   ::VariantChangeType(&v_, &v_, VARIANT_ALPHABOOL, vt);
+   ::VariantChangeType(
+     &v_              , // pvargDest (if same as pvarSrc: in-place conversion)
+     &v_              , // pvarSrc
+     VARIANT_ALPHABOOL, // VARIANT_ALPHABOOL: VT_BOOL as string will be 'True' or 'False'
+     vt                 // Dest-type
+   );
 }
