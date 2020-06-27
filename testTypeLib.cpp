@@ -1,6 +1,13 @@
 // g++ testTypeLib.cpp TypeLib.cpp VariantHelper.cpp -lole32 -loleaut32 -municode
 // 
-// a.exe "C:\Program Files\Common Files\microsoft shared\OFFICE14\MSO.DLL"
+//    a.exe "C:\Program Files (x86)\Common Files\microsoft shared\OFFICE16\MSO.DLL"
+//  or
+//    a.exe "C:\Program Files (x86)\Microsoft Office\root\Office16\MSWORD.OLB"
+//  or
+//    a.exe "C:\Program Files\Common Files\microsoft shared\OFFICE14\MSO.DLL"
+//  or
+//
+//    …
 
 #include <windows.h>
 #include <iostream>

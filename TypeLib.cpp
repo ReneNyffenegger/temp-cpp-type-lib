@@ -128,15 +128,22 @@ std::wstring TypeLib::TypeDocumentation() {
 }
 
 std::wstring TypeLib::TypeDocumentation_(ITypeInfo* i) {
+
+#ifdef TQ84_PARANOID
+  if (!i) {
+    return L"";
+  }
+#endif
+
   BSTR name;
   unsigned long ctx;
   
   HRESULT hr = i->GetDocumentation(
-    MEMBERID_NIL, //idx,
+    MEMBERID_NIL, // idx,
     &name,
-    0,//&doc,
+    0,            // &doc,
     &ctx,
-    0  // Help File
+    0             // Help File
     );
 
   if (hr != S_OK) {
@@ -204,8 +211,11 @@ std::wstring TypeLib::UserdefinedType(HREFTYPE hrt) {
 
   ITypeInfo* itpi;
   curITypeInfo_ -> GetRefTypeInfo(hrt, &itpi);
-  std::wstring ref_type = TypeDocumentation_(itpi);
-  tp += ref_type;
+
+  if (itpi) {
+     std::wstring ref_type = TypeDocumentation_(itpi);
+     tp += ref_type;
+  }
 
   return tp;
 }
@@ -233,7 +243,10 @@ std::wstring TypeLib::Type(ELEMDESC const& ed) {
     tp += L")";
   }
   else if (td.vt == VT_SAFEARRAY) {
-    // TODO
+    tp += L" (VT_SAFEARRAY)";
+  }
+  else {
+//  std::wcout << L"TODO: td.vt = " << td.vt << std::endl;
   }
 
   return tp;
