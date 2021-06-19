@@ -26,6 +26,7 @@ bool TypeLib::Open(std::wstring const& type_lib_file) {
 
     return false;
   }
+
   nofTypeInfos_ = typeLib_->GetTypeInfoCount();
   return true;
 }

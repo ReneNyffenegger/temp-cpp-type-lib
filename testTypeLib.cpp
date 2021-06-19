@@ -1,10 +1,10 @@
 // g++ testTypeLib.cpp TypeLib.cpp VariantHelper.cpp -lole32 -loleaut32 -municode
 // 
-//    a.exe "C:\Program Files (x86)\Common Files\microsoft shared\OFFICE16\MSO.DLL"
+//    .\a.exe "C:\Program Files (x86)\Common Files\microsoft shared\OFFICE16\MSO.DLL"
 //  or
-//    a.exe "C:\Program Files (x86)\Microsoft Office\root\Office16\MSWORD.OLB"
+//    .\a.exe "C:\Program Files (x86)\Microsoft Office\root\Office16\MSWORD.OLB"
 //  or
-//    a.exe "C:\Program Files\Common Files\microsoft shared\OFFICE14\MSO.DLL"
+//    .\a.exe "C:\Program Files\Common Files\microsoft shared\OFFICE14\MSO.DLL"
 //  or
 //
 //    …
@@ -16,19 +16,13 @@
 
 int wmain(int argc, wchar_t *argv[]) {
 
-  TypeLib t;
-
   if (argc < 2) {
       std::wcout << L"Specify typelib" << std::endl;
       return 1;
   }
 
-  if (!t.Open(
-     // "C:\\Program Files\\Microsoft Office\\Office\\MSWORD9.olb"
-     // "C:\\Program Files\\Microsoft Office\\root\\Office16\\MSWORD.OLB"
-     // "C:\\Program Files\\Common Files\\microsoft shared\\OFFICE14\\MSO.DLL"
-     argv[1]
-  )) {
+  TypeLib t;
+  if (!t.Open( argv[1]) ) {
     std::wcout << L"Couldn't open type library" << std::endl;
     return -1;
   }
@@ -41,6 +35,7 @@ int wmain(int argc, wchar_t *argv[]) {
   std::wcout << L"Nof Type Infos: " << nofTypeInfos << std::endl;
   
   while (t.NextTypeInfo()) {
+
     std::wstring type_doc = t.TypeDocumentation(); 
 
     std::wcout <<                                    std::endl;
