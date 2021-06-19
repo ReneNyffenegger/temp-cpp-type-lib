@@ -43,6 +43,4 @@ foreach ($guid in $regTypeLibs.GetSubKeyNames()) {
       }
 
    }
-
-
 }
